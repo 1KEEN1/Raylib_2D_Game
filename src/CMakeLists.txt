@@ -1,0 +1,1 @@
+add_executable(MyRaylibGame "main.cpp")
