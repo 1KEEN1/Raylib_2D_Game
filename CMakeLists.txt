@@ -1,5 +1,7 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.11)
 
-project(MyRaylibGame)
+# Project name
+project(Raylib_2D_Game)
 
+add_subdirectory(external)
 add_subdirectory(src)
