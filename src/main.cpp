@@ -3,6 +3,42 @@
 
 #include "raylib.h"
 
+// Idle animation of character
+typedef struct Animation {
+    int first;
+    int last;
+    int current;
+    float speed;
+    float durationLeft;
+} Animation;
+
+void animationUpdate(Animation* self) {
+    float dt = GetFrameTime();
+    self->durationLeft -= dt;
+
+    if (self->durationLeft <= 0.0f) {
+        self->durationLeft = self->speed;
+        self->current++;
+
+        if (self->current > self->last) {
+            self->current = self->first;
+        }
+    }
+}
+
+Rectangle animationFrame(Animation* self, int numFramesPerRow) {
+    float x = (self->current % numFramesPerRow) * 32.0f;
+    float y = (self->current / numFramesPerRow) * 32.0f;
+
+    Rectangle rect;
+    rect.x = x;
+    rect.y = y;
+    rect.width = 32.0f;
+    rect.height = 32.0f;
+
+    return rect;
+}
+
 int main() {
     // Initialization of window
     const int screenWidth = 1280;
@@ -22,7 +58,7 @@ int main() {
     const int movementSpeed = 3;
 
     // Loading default pose of main character.
-    // Scale image x2
+    // Scale image x2 by multiplying
     const int mainCharacterWidth = (fullPackWidth / amountOfColumns) * 2;
     const int mainCharacterHeight = (fullPackHeigth / amountOfRows) * 2;
 
@@ -34,8 +70,7 @@ int main() {
         (float)mainCharacterHeight / 2.0f
     };
 
-    // Player position on the screen.
-    // Starts from center.
+    // Player position on the screen. Starts from center.
     Rectangle mainCharacterPosition = Rectangle {
         (float)screenWidth / 2.0f - mainCharacterWidth / 2.0f,
         (float)screenHeight / 2.0f - mainCharacterHeight / 2.0f, 
@@ -43,10 +78,25 @@ int main() {
         (float)mainCharacterHeight
     };
 
+    // Initialization of animation
+    Animation anim;      
+    anim.first = 0;
+    anim.last = 3;
+    anim.current = 0;
+    anim.speed = 0.1f;
+    anim.durationLeft = 0.1f;
+
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(RAYWHITE);
        
+        animationUpdate(&anim);
+        // Getting current frame
+        Rectangle sourceRect = animationFrame(&anim, amountOfColumns);
+
+        // Rotation point (center)
+        Vector2 origin = Vector2{ mainCharacterPosition.width / 2.0f, mainCharacterPosition.height / 2.0f };
+
         // Movement of character
         if (IsKeyDown(KEY_W)) {
             mainCharacterPosition.y -= movementSpeed;
@@ -61,11 +111,11 @@ int main() {
             mainCharacterPosition.x -= movementSpeed;
         }
 
-        DrawTexturePro(mainCharacter, 
-            mainCharacterFrame, 
-            mainCharacterPosition, 
-            Vector2{ mainCharacterPosition.width, mainCharacterPosition.height },
-            0.0f, 
+        DrawTexturePro(mainCharacter,
+            sourceRect,             
+            mainCharacterPosition,
+            origin,   
+            0.0f,
             WHITE);
 
         EndDrawing();
