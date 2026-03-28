@@ -1,6 +1,7 @@
 #include <iostream>
-#include "raylib.h"
 #include <math.h>
+
+#include "raylib.h"
 
 int main() {
     // Initialization of window
@@ -13,39 +14,57 @@ int main() {
 
     // Loading full pack of main character assets.
     Texture2D mainCharacter = LoadTexture("sprites/skeleton.png");
-
+    
     const int fullPackWidth = 128;
     const int fullPackHeigth = 384;
     const int amountOfColumns = 4;
     const int amountOfRows = 12;
+    const int movementSpeed = 3;
 
     // Loading default pose of main character.
-    const int mainCharacterWidth = fullPackWidth / amountOfColumns;
-    const int mainCharacterHeight = fullPackHeigth / amountOfRows;
+    // Scale image x2
+    const int mainCharacterWidth = (fullPackWidth / amountOfColumns) * 2;
+    const int mainCharacterHeight = (fullPackHeigth / amountOfRows) * 2;
 
-    Rectangle sourceMainCharacterDefaultPose = Rectangle {
+    // Select first frame of character from pack.
+    Rectangle mainCharacterFrame = Rectangle {
         0,
         0,
-        (float)mainCharacterWidth,
-        (float)mainCharacterHeight
+        (float)mainCharacterWidth / 2.0f,
+        (float)mainCharacterHeight / 2.0f
     };
 
-    // Place Character in the center of Window
-    Rectangle defaultMainCharacterPosition = Rectangle {
+    // Player position on the screen.
+    // Starts from center.
+    Rectangle mainCharacterPosition = Rectangle {
         (float)screenWidth / 2.0f - mainCharacterWidth / 2.0f,
         (float)screenHeight / 2.0f - mainCharacterHeight / 2.0f, 
-        (float)mainCharacterWidth / 1.0f, 
+        (float)mainCharacterWidth, 
         (float)mainCharacterHeight
     };
 
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(RAYWHITE);
+       
+        // Movement of character
+        if (IsKeyDown(KEY_W)) {
+            mainCharacterPosition.y -= movementSpeed;
+        }
+        if (IsKeyDown(KEY_S)) {
+            mainCharacterPosition.y += movementSpeed;
+        }
+        if (IsKeyDown(KEY_D)) {
+            mainCharacterPosition.x += movementSpeed;
+        }
+        if (IsKeyDown(KEY_A)) {
+            mainCharacterPosition.x -= movementSpeed;
+        }
 
         DrawTexturePro(mainCharacter, 
-            sourceMainCharacterDefaultPose, 
-            defaultMainCharacterPosition, 
-            Vector2{ defaultMainCharacterPosition.width, defaultMainCharacterPosition.height }, 
+            mainCharacterFrame, 
+            mainCharacterPosition, 
+            Vector2{ mainCharacterPosition.width, mainCharacterPosition.height },
             0.0f, 
             WHITE);
 
