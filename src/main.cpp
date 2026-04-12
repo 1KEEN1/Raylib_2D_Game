@@ -5,30 +5,30 @@
 
 // Idle animation of character
 typedef struct Animation {
-    int first;
-    int last;
-    int current;
-    float speed;
-    float durationLeft;
+    int firstFrame;
+    int lastFrame;
+    int currentFrame;
+    float frameSpeed;
+    float frameDurationLeft;
 } Animation;
 
 void animationUpdate(Animation* self) {
     float dt = GetFrameTime();
-    self->durationLeft -= dt;
+    self->frameDurationLeft -= dt;
 
-    if (self->durationLeft <= 0.0f) {
-        self->durationLeft = self->speed;
-        self->current++;
+    if (self->frameDurationLeft <= 0.0f) {
+        self->frameDurationLeft = self->frameSpeed;
+        self->currentFrame++;
 
-        if (self->current > self->last) {
-            self->current = self->first;
+        if (self->currentFrame > self->lastFrame) {
+            self->currentFrame = self->firstFrame;
         }
     }
 }
 
 Rectangle animationFrame(Animation* self, int numFramesPerRow) {
-    float x = (self->current % numFramesPerRow) * 32.0f;
-    float y = (self->current / numFramesPerRow) * 32.0f;
+    float x = (self->currentFrame % numFramesPerRow) * 32.0f;
+    float y = (self->currentFrame / numFramesPerRow) * 32.0f;
 
     Rectangle rect;
     rect.x = x;
@@ -80,11 +80,11 @@ int main() {
 
     // Initialization of animation
     Animation anim;      
-    anim.first = 0;
-    anim.last = 3;
-    anim.current = 0;
-    anim.speed = 0.1f;
-    anim.durationLeft = 0.1f;
+    anim.firstFrame = 0;
+    anim.lastFrame = 3;
+    anim.currentFrame = 0;
+    anim.frameSpeed = 0.2f;
+    anim.frameDurationLeft = 0.1f;
 
     while (!WindowShouldClose()) {
         BeginDrawing();
